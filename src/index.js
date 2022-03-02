@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import { App } from './components/app/App';
 import reportWebVitals from './reportWebVitals';
-const apiKey = '38fb68262a1dad15193eb72bff90089d';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+import { App } from './components/app/App';
+import './index.css';
+
 ReactDOM.render(
   <React.StrictMode>
-    <App apiKey={apiKey} />
+    <App />
   </React.StrictMode>,
   document.getElementById('root'),
 );

@@ -40,7 +40,7 @@ export class Nav extends React.Component {
                   key={index}
                   path={route.path}
                   exact={route.exact}
-                  children={<route.main apiKey={this.props.apiKey} />}
+                  children={<route.main />}
                 />
               ))}
             </Switch>

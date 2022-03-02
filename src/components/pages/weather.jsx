@@ -1,4 +1,5 @@
 import React from 'react';
+const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
 
 export class Weather extends React.Component {
   state = {
@@ -17,7 +18,7 @@ export class Weather extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.cityName !== prevState.cityName) {
-      this.getCurrentWeatherForCity(this.state.cityName, this.props.apiKey);
+      this.getCurrentWeatherForCity(this.state.cityName, apiKey);
     }
   }
 
@@ -30,8 +31,7 @@ export class Weather extends React.Component {
           onChange={e => this.setState({ inputVal: e.currentTarget.value })}
         />
         <button
-          onClick={() => this.setState({ cityName: this.state.inputVal })}
-        >
+          onClick={() => this.setState({ cityName: this.state.inputVal })}>
           Check Weather
         </button>
         <p>
