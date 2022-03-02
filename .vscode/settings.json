@@ -1,0 +1,17 @@
+{
+  /**
+   * FOR TRANSPARENCY; Some of these rules are highly opinionated
+   * and would be a team discussion on what to or what not to commit
+   */
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.prettier": true
+  },
+  "eslint.validate": ["javascript", "typscript"],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "[yaml]": {
+    "editor.formatOnSave": false
+  }
+}
