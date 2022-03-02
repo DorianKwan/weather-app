@@ -1,18 +1,18 @@
-import React from "react";
-import "./nav.css";
-import { Home } from "../pages/home";
-import { Weather } from "../pages/weather";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React from 'react';
+import './nav.css';
+import { Home } from '../pages/home';
+import { Weather } from '../pages/weather';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 const routes = [
   {
-    path: "/",
+    path: '/',
     exact: true,
-    main: (props) => <Home {...props} />,
+    main: props => <Home {...props} />,
   },
   {
-    path: "/weather",
-    main: (props) => {
+    path: '/weather',
+    main: props => {
       return <Weather {...props} />;
     },
   },

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export class Weather extends React.Component {
   state = {
@@ -9,10 +9,10 @@ export class Weather extends React.Component {
 
   getCurrentWeatherForCity = (cityName, apiKey) => {
     fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`
+      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`,
     )
-      .then((res) => res.json())
-      .then((result) => this.setState({ weather: result }));
+      .then(res => res.json())
+      .then(result => this.setState({ weather: result }));
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -27,7 +27,7 @@ export class Weather extends React.Component {
         <h2>Weather</h2>
         <input
           placeholder="City name"
-          onChange={(e) => this.setState({ inputVal: e.currentTarget.value })}
+          onChange={e => this.setState({ inputVal: e.currentTarget.value })}
         />
         <button
           onClick={() => this.setState({ cityName: this.state.inputVal })}
@@ -35,7 +35,7 @@ export class Weather extends React.Component {
           Check Weather
         </button>
         <p>
-          The current weather is:{" "}
+          The current weather is:{' '}
           {this.state.weather && this.state.weather.main.temp}
         </p>
       </>
