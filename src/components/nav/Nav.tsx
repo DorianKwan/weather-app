@@ -1,8 +1,8 @@
 import React from 'react';
+import styled from '@emotion/styled';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Weather } from '../pages/Weather';
-import './nav.css';
 
 const routes = [
   {
@@ -21,18 +21,20 @@ const routes = [
 export const Nav = () => {
   return (
     <Router>
-      <div className="container">
-        <div className="sidebar_container">
-          <ul className="sidebar">
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/weather">Weather</Link>
-            </li>
-          </ul>
-        </div>
-        <div className="page_container">
+      <Container>
+        <SidebarContainer>
+          <nav>
+            <SidebarList>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/weather">Weather</Link>
+              </li>
+            </SidebarList>
+          </nav>
+        </SidebarContainer>
+        <PageContainer>
           <Switch>
             {routes.map(route => (
               <Route key={route.path} path={route.path} exact={route.exact}>
@@ -40,8 +42,37 @@ export const Nav = () => {
               </Route>
             ))}
           </Switch>
-        </div>
-      </div>
+        </PageContainer>
+      </Container>
     </Router>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
+const SidebarContainer = styled.nav`
+  padding: 0.75rem;
+  min-width: 12.5rem;
+  height: 100%;
+  background-color: #282c34;
+  color: white;
+`;
+
+const SidebarList = styled.ul`
+  li {
+    margin-bottom: 0.75rem;
+
+    a {
+      color: white;
+      text-decoration: none;
+    }
+  }
+`;
+
+const PageContainer = styled.main`
+  flex: 1;
+  padding: 10px;
+`;
