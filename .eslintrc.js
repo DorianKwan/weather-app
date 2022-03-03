@@ -48,6 +48,7 @@ module.exports = {
     'react/require-default-props': 0,
     'react/jsx-filename-extension': [1, { extensions: ['.jsx', 'tsx'] }],
     'no-unused-expressions': 'off',
+    '@typescript-eslint/no-use-before-define': ['off'],
     '@typescript-eslint/no-unused-expressions': ['error'],
     '@typescript-eslint/no-unsafe-member-access': ['warn'],
     '@typescript-eslint/require-await': 'off',
