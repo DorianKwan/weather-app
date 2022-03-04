@@ -4,9 +4,12 @@ import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faSun } from '@fortawesome/free-solid-svg-icons';
 import { useAsyncEffect } from 'src/hooks';
 import { keyframes } from '@emotion/react';
-import { AnimatedText, PageWrapper } from '../utility';
+import { AnimatedText, FadeIn, PageWrapper } from '../utility';
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+const ANIMATED_TEXT_DURATION = 0.05;
+const FADE_IN_DELAY = 0.25;
+const FADE_IN_DURATION = 1.75;
 
 interface WeatherData {
   base: string;
@@ -71,31 +74,39 @@ export const Weather = () => {
     <WeatherPageWrapper>
       <WeatherContainer>
         <WeatherHeading>
-          <AnimatedText duration={0.05} content="Weather" />
+          <AnimatedText duration={ANIMATED_TEXT_DURATION} content="Weather" />
         </WeatherHeading>
         <CityName>
-          <AnimatedText duration={0.05} content={cityName} />
+          <AnimatedText duration={ANIMATED_TEXT_DURATION} content={cityName} />
         </CityName>
-        <WeatherIconWrapper>
-          <WeatherIcon icon={faSun} />
-        </WeatherIconWrapper>
+        <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
+          <WeatherIconWrapper>
+            <WeatherIcon icon={faSun} />
+          </WeatherIconWrapper>
+        </FadeIn>
         <Temperature>
           <AnimatedText
-            duration={0.05}
-            content={`${weather?.main?.temp?.toPrecision(4) || 'Unknown'}K`}
+            duration={ANIMATED_TEXT_DURATION}
+            content={
+              weather?.main?.temp?.toPrecision(4)
+                ? `${weather?.main?.temp?.toPrecision(4)}K`
+                : ''
+            }
           />
         </Temperature>
-        <CityInput
-          placeholder="City name"
-          onChange={event => setInputVal(event.currentTarget.value)}
-          onKeyPress={event => {
-            if (event.key === 'Enter') {
-              setCityName(inputVal);
-              setInputVal('');
-            }
-          }}
-          value={inputVal}
-        />
+        <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
+          <CityInput
+            placeholder="City name"
+            onChange={event => setInputVal(event.currentTarget.value)}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                setCityName(inputVal);
+                setInputVal('');
+              }
+            }}
+            value={inputVal}
+          />
+        </FadeIn>
       </WeatherContainer>
     </WeatherPageWrapper>
   );
