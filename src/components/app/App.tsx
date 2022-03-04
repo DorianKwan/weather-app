@@ -1,13 +1,17 @@
 import React, { StrictMode } from 'react';
 import styled from '@emotion/styled';
+import { ThemeProvider } from '@emotion/react';
+import theme from '../../theme/theme';
 import { Nav } from '../nav/Nav';
 
 export const App = () => {
   return (
     <StrictMode>
-      <AppContainer>
-        <Nav />
-      </AppContainer>
+      <ThemeProvider theme={theme}>
+        <AppContainer>
+          <Nav />
+        </AppContainer>
+      </ThemeProvider>
     </StrictMode>
   );
 };
