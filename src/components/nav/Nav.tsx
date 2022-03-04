@@ -1,6 +1,12 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Switch,
+  Route,
+  Link,
+} from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Weather } from '../pages/Weather';
 
@@ -41,6 +47,9 @@ export const Nav = () => {
                 {<route.main />}
               </Route>
             ))}
+            <Route path="*">
+              <Redirect to="/home" />
+            </Route>
           </Switch>
         </PageContainer>
       </Container>
