@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { Gradient } from 'src/theme/theme';
 import { useRandomGradient, useTypedTheme } from 'src/hooks';
 import { keyframes } from '@emotion/react';
-import { PageWrapper, AnimatedText } from '../utility';
+import { PageWrapper, AnimatedText, FadeIn } from '../utility';
 
 export const Home = () => {
   const theme = useTypedTheme();
@@ -31,7 +31,7 @@ export const Home = () => {
           </HomeText>
         </div>
         <GradientInfoContainer>
-          <GradientInfoWrapper>
+          <GradientInfoWrapper delay={4.75}>
             <RandomGradientName>{gradient.fullName}</RandomGradientName>
             <RandomGradientActionWrapper>
               <RandomGradientActionButton onClick={prev} color={lastColor}>
@@ -117,7 +117,7 @@ const HomeText = styled.p`
   margin: 0 auto;
   margin-top: 1rem;
   animation-name: ${homeTextAnimation};
-  animation-delay: 3s;
+  animation-delay: 4s;
   animation-duration: 1s;
   animation-fill-mode: forwards;
 
@@ -142,7 +142,7 @@ const GradientInfoContainer = styled.div`
   text-transform: capitalize;
 `;
 
-const GradientInfoWrapper = styled.div`
+const GradientInfoWrapper = styled(FadeIn)`
   width: clamp(10rem, 50%, 20rem);
 `;
 
