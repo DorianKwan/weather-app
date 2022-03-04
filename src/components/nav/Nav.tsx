@@ -7,8 +7,12 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
+import { faHome, faCloudSun } from '@fortawesome/free-solid-svg-icons';
+import { useTypedTheme } from 'src/hooks';
 import { Home } from '../pages/Home';
 import { Weather } from '../pages/Weather';
+import WeatherAppLogo from '../../assets/images/weather-logo.png';
 
 const routes = [
   {
@@ -25,17 +29,26 @@ const routes = [
 ];
 
 export const Nav = () => {
+  const theme = useTypedTheme();
+
   return (
     <Router>
       <Container>
-        <SidebarContainer>
+        <SidebarContainer background={theme.colors.ash}>
+          <AppLogoWrapper>
+            <img src={WeatherAppLogo} alt="app-logo" />
+          </AppLogoWrapper>
           <nav>
-            <SidebarList>
+            <SidebarList hoverColor={theme.colors.pink}>
               <li>
-                <Link to="/">Home</Link>
+                <Link to="/">
+                  <Icon icon={faHome} />
+                </Link>
               </li>
               <li>
-                <Link to="/weather">Weather</Link>
+                <Link to="/weather">
+                  <Icon icon={faCloudSun} />
+                </Link>
               </li>
             </SidebarList>
           </nav>
@@ -62,26 +75,65 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const SidebarContainer = styled.nav`
-  padding: 0.75rem;
-  min-width: 12.5rem;
+const SidebarContainer = styled.nav<{ background: string }>`
+  padding: 0 1rem;
+  padding-top: 2rem;
+  max-width: 4rem;
   height: 100%;
-  background-color: #282c34;
+  background: ${({ background }) => background};
   color: white;
+
+  @media only screen and (min-width: 640px) {
+    max-width: 5.25rem;
+  }
 `;
 
-const SidebarList = styled.ul`
+const SidebarList = styled.ul<{ hoverColor: string }>`
+  margin-top: 1.5rem;
+
   li {
-    margin-bottom: 0.75rem;
+    position: relative;
+    padding: 1.1rem 0;
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 7.5%;
+      bottom: 0;
+      width: 85%;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
 
     a {
       color: white;
       text-decoration: none;
+
+      &:hover {
+        svg {
+          color: ${({ hoverColor }) => hoverColor};
+        }
+      }
+
+      svg {
+        transition: color 0.3s linear;
+        width: 1.6rem;
+        height: 1.6rem;
+      }
     }
   }
 `;
 
 const PageContainer = styled.main`
   flex: 1;
-  padding: 10px;
+  display: grid;
+`;
+
+const AppLogoWrapper = styled.div`
+  width: 100%;
+  display: grid;
+  place-items: center;
+
+  img {
+    width: 90%;
+  }
 `;
