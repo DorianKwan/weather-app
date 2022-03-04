@@ -140,10 +140,6 @@ export const gradients: UIGradient[] = [
     colors: ['#D31027', '#EA384D'],
   },
   {
-    name: 'Sunny Days',
-    colors: ['#EDE574', '#E1F5C4'],
-  },
-  {
     name: 'Green Beach',
     colors: ['#02AAB0', '#00CDAC'],
   },
