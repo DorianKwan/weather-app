@@ -47,7 +47,7 @@ const createAnimationDelay = (charCount: number, charDelay?: number) => {
 
   for (let i = 1; i < charCount + 1; i++) {
     styles += `
-      &:nth-child(${i}) {
+      &:nth-of-type(${i}) {
         animation-delay: ${i * (charDelay ?? 0.1)}s;
       }
     `;
