@@ -56,6 +56,7 @@ const theme: Theme = {
   gradients: buildThemeGradients(),
   colors: {
     ash: '#3f4c6b',
+    pink: '#f8cdda',
   },
 };
 
