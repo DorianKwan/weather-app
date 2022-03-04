@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import styled from '@emotion/styled';
+import React, { useState, useRef } from 'react';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
+import { faSun } from '@fortawesome/free-solid-svg-icons';
+import { useAsyncEffect } from 'src/hooks';
+import { keyframes } from '@emotion/react';
+import { AnimatedText, PageWrapper } from '../utility';
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
 
@@ -29,38 +35,162 @@ interface WeatherData {
 }
 
 export const Weather = () => {
-  const [cityName, setCityName] = useState<string>('');
+  const [cityName, setCityName] = useState<string>('Calgary');
   const [inputVal, setInputVal] = useState<string>('');
   const [weather, setWeather] = useState<WeatherData | undefined>();
 
   const prevCityRef = useRef<string>('');
+  const prevWeatherRef = useRef<WeatherData | undefined>();
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (apiKey && cityName !== prevCityRef.current) {
-      fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`,
-      )
-        .then(res => res.json())
-        .then((result: WeatherData) => {
-          setWeather(result);
-        })
-        .catch(err => console.error(err));
+      try {
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`,
+        );
+
+        if (!response.ok) {
+          // will handle this better in next PR
+          throw new Error('Open API Fetch Failed');
+        }
+
+        const weatherData = (await response.json()) as WeatherData;
+        setWeather(weatherData);
+
+        prevWeatherRef.current = weatherData;
+        prevCityRef.current = cityName;
+      } catch (err) {
+        setWeather(prevWeatherRef.current);
+        setCityName(prevCityRef.current);
+        console.error(err);
+      }
     }
-    prevCityRef.current = cityName;
   }, [cityName]);
 
   return (
-    <>
-      <h2>Weather</h2>
-      <input
-        placeholder="City name"
-        onChange={e => setInputVal(e.currentTarget.value)}
-        value={inputVal}
-      />
-      <button type="button" onClick={() => setCityName(inputVal)}>
-        Check Weather
-      </button>
-      <p>The current weather is: {weather?.main?.temp}</p>
-    </>
+    <WeatherPageWrapper>
+      <WeatherContainer>
+        <WeatherHeading>
+          <AnimatedText duration={0.05} content="Weather" />
+        </WeatherHeading>
+        <CityName>
+          <AnimatedText duration={0.05} content={cityName} />
+        </CityName>
+        <WeatherIconWrapper>
+          <WeatherIcon icon={faSun} />
+        </WeatherIconWrapper>
+        <Temperature>
+          <AnimatedText
+            duration={0.05}
+            content={`${weather?.main?.temp?.toPrecision(4) || 'Unknown'}K`}
+          />
+        </Temperature>
+        <CityInput
+          placeholder="City name"
+          onChange={event => setInputVal(event.currentTarget.value)}
+          onKeyPress={event => {
+            if (event.key === 'Enter') {
+              setCityName(inputVal);
+              setInputVal('');
+            }
+          }}
+          value={inputVal}
+        />
+      </WeatherContainer>
+    </WeatherPageWrapper>
   );
 };
+
+const WeatherPageWrapper = styled(PageWrapper)`
+  display: grid;
+  place-items: center;
+`;
+
+const WeatherContainer = styled.div``;
+
+const WeatherHeading = styled.h1`
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+
+  @media only screen and (min-width: 1200px) {
+    font-size: 4.5rem;
+    margin-bottom: 0.75rem;
+  }
+`;
+
+const CityName = styled.h2`
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+
+  @media only screen and (min-width: 1200px) {
+    font-size: 3.25em;
+    margin-bottom: 1rem;
+  }
+`;
+
+const weatherIconAnimation = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+`;
+
+const WeatherIcon = styled(Icon)`
+  font-size: 5rem;
+  margin: 1rem auto;
+  animation: ${weatherIconAnimation} 10s infinite linear;
+
+  @media only screen and (min-width: 1200px) {
+    font-size: 6.25rem;
+    margin: 2rem 0;
+  }
+`;
+
+const weatherWrapperAnimation = keyframes`
+  /* Down motion */
+  0% {transform: translateY(0px);}
+  10% {transform: translateY(-2px);}
+  25% {transform: translateY(-4px);}
+  40% {transform: translateY(-2px);}
+  50% {transform: translateY(0px);}
+  /* Up motion */
+  60% {transform: translateY(2px);}
+  75% {transform: translateY(4px);}
+  90% {transform: translateY(2px);}
+  100% {transform: translateY(0px);}
+`;
+
+const WeatherIconWrapper = styled.div`
+  animation: ${weatherWrapperAnimation} 1.75s infinite linear;
+`;
+
+const Temperature = styled.p`
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+
+  @media only screen and (min-width: 1200px) {
+    font-size: 4.25rem;
+    margin-bottom: 2rem;
+  }
+`;
+
+const CityInput = styled.input`
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  border-style: none;
+  border: 1px solid black;
+  margin-bottom: 1rem;
+
+  &:focus-visible {
+    outline-color: #8f94fb;
+  }
+
+  @media only screen and (min-width: 1200px) {
+    font-size: 1.75rem;
+    padding: 0.75rem 1.25rem;
+  }
+`;
