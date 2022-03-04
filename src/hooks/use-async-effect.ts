@@ -1,4 +1,4 @@
-import React, { DependencyList, useEffect } from 'react';
+import { DependencyList, useEffect } from 'react';
 
 export const useAsyncEffect = (
   effect: Function,
