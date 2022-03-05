@@ -2,12 +2,19 @@ import React, { StrictMode } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import styled from '@emotion/styled';
 import { ThemeProvider } from '@emotion/react';
-import theme from '../theme/theme';
+import theme, { Theme } from '../theme/theme';
 
-const AllProviders: React.FC = ({ children }) => {
+interface AllProvidersProps {
+  themeOverride?: Theme;
+}
+
+const AllProviders: React.FC<AllProvidersProps> = ({
+  children,
+  themeOverride,
+}) => {
   return (
     <StrictMode>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeOverride ?? theme}>
         <AppContainer>{children}</AppContainer>
       </ThemeProvider>
     </StrictMode>
@@ -27,7 +34,18 @@ const AppContainer = styled.main`
 const customRender = (
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, { wrapper: AllProviders, ...options });
+  themeOverride?: Theme,
+) => {
+  const ThemeOverride: React.FC = ({ children }) => {
+    return (
+      <AllProviders themeOverride={themeOverride}>{children}</AllProviders>
+    );
+  };
+
+  const wrapper = themeOverride ? ThemeOverride : AllProviders;
+
+  render(ui, { wrapper, ...options });
+};
 
 export * from '@testing-library/react';
 export { customRender as render };
