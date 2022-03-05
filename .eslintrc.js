@@ -30,6 +30,7 @@ module.exports = {
     'no-await-in-loop': 0,
     'no-continue': 0,
     'no-plusplus': 0,
+    'no-restricted-syntax': ['warn'],
     'class-methods-use-this': 0,
     'consistent-return': 0,
     'no-return-assign': ['error', 'except-parens'],
