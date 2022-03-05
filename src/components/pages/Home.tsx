@@ -12,7 +12,7 @@ export const Home = () => {
 
   return (
     <HomePageWrapper>
-      <GradientContainer background={gradient}>
+      <GradientContainer aria-label="gradient" background={gradient}>
         <div>
           <HomeHeading>
             <AnimatedText content="Welcome" />
@@ -32,7 +32,9 @@ export const Home = () => {
         </div>
         <GradientInfoContainer>
           <GradientInfoWrapper delay={4.75}>
-            <RandomGradientName>{gradient.fullName}</RandomGradientName>
+            <RandomGradientName aria-label="gradient-name">
+              {gradient.fullName}
+            </RandomGradientName>
             <RandomGradientActionWrapper>
               <RandomGradientActionButton onClick={prev} color={lastColor}>
                 Prev
