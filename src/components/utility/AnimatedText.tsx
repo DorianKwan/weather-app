@@ -21,6 +21,8 @@ export const AnimatedText = ({ content, duration, charDelay }: Props) => {
   });
   return (
     <Wrapper
+      // becuase a bunch of singluar span letters would be horrid for screen readers
+      aria-label={content}
       charCount={splitContent.length}
       duration={duration}
       charDelay={charDelay}>
