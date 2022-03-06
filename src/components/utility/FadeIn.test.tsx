@@ -14,6 +14,6 @@ test('FadeIn renders test when children contains test', () => {
       React.createElement(TestText),
     ),
   );
-  const linkElement = screen.getByText(/Test/i);
-  expect(linkElement).toBeInTheDocument();
+  const testElement = screen.getByText(/Test/i);
+  expect(testElement).toBeInTheDocument();
 });

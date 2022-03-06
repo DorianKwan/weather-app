@@ -33,10 +33,10 @@ const determineLeftOverGradient = (initialGradientName: string) => {
   }
 };
 
-test('renders nav sidebar', () => {
+test('renders home screen', () => {
   render(React.createElement(Home));
-  const linkElement = screen.getByLabelText(/welcome/i);
-  expect(linkElement).toBeInTheDocument();
+  const welcomeContainer = screen.getByLabelText(/welcome/i);
+  expect(welcomeContainer).toBeInTheDocument();
 });
 
 test('render correct next gradient', async () => {

@@ -8,6 +8,6 @@ const TestText = () => {
 
 test('PageWrapper renders test when children contain test', () => {
   render(React.createElement(PageWrapper, {}, React.createElement(TestText)));
-  const linkElement = screen.getByText(/test/i);
-  expect(linkElement).toBeInTheDocument();
+  const pageContainer = screen.getByText(/test/i);
+  expect(pageContainer).toBeInTheDocument();
 });
