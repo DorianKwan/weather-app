@@ -39,7 +39,7 @@ test('renders home screen', () => {
   expect(welcomeContainer).toBeInTheDocument();
 });
 
-test('render correct next gradient', async () => {
+test('renders correct next gradient', async () => {
   render(React.createElement(Home), {}, mockTheme);
 
   // determine name because gradient is random on load
@@ -59,7 +59,7 @@ test('render correct next gradient', async () => {
   expect(currentGradientName === leftOverGradientName).toBeTruthy();
 });
 
-test('render correct prev gradient', async () => {
+test('renders correct prev gradient', async () => {
   render(React.createElement(Home), {}, mockTheme);
 
   // determine name because gradient is random on load
@@ -79,7 +79,7 @@ test('render correct prev gradient', async () => {
   expect(currentGradientName === leftOverGradientName).toBeTruthy();
 });
 
-test('render correct gradient when end is hit using next', async () => {
+test('renders correct gradient when end is hit using next', async () => {
   render(React.createElement(Home), {}, mockTheme);
 
   // determine name because gradient is random on load
@@ -98,7 +98,7 @@ test('render correct gradient when end is hit using next', async () => {
   expect(initialGradientName === currentGradientName).toBeTruthy();
 });
 
-test('render correct gradient when end is hit using prev', async () => {
+test('renders correct gradient when end is hit using prev', async () => {
   render(React.createElement(Home), {}, mockTheme);
 
   // determine name because gradient is random on load
