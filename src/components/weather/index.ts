@@ -1,1 +1,1 @@
-export { WeatherIcon } from './WeatherIcon';
+export { WeatherIcon, determineIcon } from './WeatherIcon';

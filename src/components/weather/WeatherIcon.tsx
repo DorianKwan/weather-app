@@ -17,7 +17,7 @@ interface WeatherIconProps {
   iconCode: string;
 }
 
-const determineIcon = (type: string, iconCode: string) => {
+export const determineIcon = (type: string, iconCode: string) => {
   const isNightTime = iconCode.includes('n');
   let icon = faSun;
   let shouldSpin = false;
@@ -50,7 +50,7 @@ export const WeatherIcon: React.FC<WeatherIconProps> = ({ type, iconCode }) => {
   const { icon, shouldSpin } = determineIcon(type, iconCode);
 
   return (
-    <WeatherIconWrapper>
+    <WeatherIconWrapper aria-label="weather icon">
       <StyledWeatherIcon spin={shouldSpin} icon={icon} />
     </WeatherIconWrapper>
   );
