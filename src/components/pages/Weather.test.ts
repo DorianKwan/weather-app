@@ -54,14 +54,6 @@ const setupWeather = async () => {
   };
 };
 
-test('renders weather page', async () => {
-  setupWeather();
-
-  const weatherContainer = await screen.findByLabelText('Weather');
-
-  expect(weatherContainer).toBeInTheDocument();
-});
-
 test('temp change to Celsius', async () => {
   const { unitChangeButtons } = await setupWeather();
   const { celsius: celsiusButton, kelvin: kelvinButton } = unitChangeButtons;
