@@ -1,6 +1,7 @@
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { render, screen, waitFor } from '../../utils';
+import { fireEvent, render, screen } from '../../utils';
 import { Weather } from './Weather';
 
 const mockAPI = jest.fn().mockResolvedValue({
@@ -83,4 +84,18 @@ test('temp change to Kelvin', async () => {
   const kelvinTemp = await screen.findByLabelText(/\d+K/);
 
   expect(kelvinTemp).toBeInTheDocument();
+});
+
+test('new weather info is fetched when changing city', async () => {
+  render(React.createElement(Weather, { mockAPI }));
+
+  const cityInput = await screen.findByPlaceholderText('City name');
+
+  userEvent.type(cityInput, 'toronto');
+  fireEvent.keyPress(cityInput, { key: 'Enter', charCode: 13 });
+
+  const updatedCityName = await screen.findByLabelText('toronto');
+
+  // only check if city name changes as temperature returned isn't consistent
+  expect(updatedCityName).toBeInTheDocument();
 });
