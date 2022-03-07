@@ -37,7 +37,7 @@ test('renders weather page', async () => {
   expect(weatherContainer).toBeInTheDocument();
 });
 
-test('Temp change to Celsius', async () => {
+test('temp change to Celsius', async () => {
   render(React.createElement(Weather, { mockAPI }));
 
   const kelvinButton = await screen.findByLabelText(/kelvin/i);
@@ -57,7 +57,7 @@ test('Temp change to Celsius', async () => {
   expect(celsiusTemp).toBeInTheDocument();
 });
 
-test('Temp change to Fahrenheit', async () => {
+test('temp change to Fahrenheit', async () => {
   render(React.createElement(Weather, { mockAPI }));
 
   const fahrenheitButton = await screen.findByLabelText(/fahrenheit/i);
@@ -71,7 +71,7 @@ test('Temp change to Fahrenheit', async () => {
   expect(fahrenheitTemp).toBeInTheDocument();
 });
 
-test('Temp change to Kelvin', async () => {
+test('temp change to Kelvin', async () => {
   render(React.createElement(Weather, { mockAPI }));
 
   const kelvinButton = await screen.findByLabelText(/kelvin/i);
