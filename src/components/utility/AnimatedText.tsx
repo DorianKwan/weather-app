@@ -1,27 +1,40 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { css, keyframes } from '@emotion/react';
+import { capitalizeString } from '../../utils';
 
 interface Props {
   readonly content: string;
   readonly duration?: number;
   readonly charDelay?: number;
+  readonly capitalize?: boolean;
 }
 
-export const AnimatedText = ({ content, duration, charDelay }: Props) => {
-  // elements will never be moved around or new elements added
-  const splitContent = content.split('').map((char: string, index: number) => {
-    return char === ' ' ? (
-      // eslint-disable-next-line react/no-array-index-key
-      <span key={index}>&nbsp;</span>
-    ) : (
-      // eslint-disable-next-line react/no-array-index-key
-      <span key={index}>{char}</span>
-    );
-  });
+export const AnimatedText = ({
+  capitalize,
+  content,
+  duration,
+  charDelay,
+}: Props) => {
+  const contentToAnimate = capitalize
+    ? capitalizeString(content, true)
+    : content;
+  // elements will never moved or added
+  const splitContent = contentToAnimate
+    .split('')
+    .map((char: string, index: number) => {
+      return char === ' ' ? (
+        // eslint-disable-next-line react/no-array-index-key
+        <span key={index}>&nbsp;</span>
+      ) : (
+        // eslint-disable-next-line react/no-array-index-key
+        <span key={index}>{char}</span>
+      );
+    });
+
   return (
     <Wrapper
-      // becuase a bunch of singluar span letters would be horrid for screen readers
+      // because a bunch of singular span letters would be horrid for screen readers
       aria-label={content}
       charCount={splitContent.length}
       duration={duration}
