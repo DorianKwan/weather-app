@@ -4,7 +4,9 @@ import { act } from 'react-dom/test-utils';
 import { fireEvent, render, screen } from '../../utils';
 import { Weather } from './Weather';
 
-const mockAPI = jest.fn().mockResolvedValue({
+// must be lowercase for tests to work; targeted by label
+const mockCityName = 'calgary';
+const baseMockApiData = {
   base: '',
   clouds: { all: 0 },
   cod: 0,
@@ -19,7 +21,7 @@ const mockAPI = jest.fn().mockResolvedValue({
     temp_max: 0,
     temp_min: 0,
   },
-  name: 'Calgary',
+  name: mockCityName,
   timezone: 0,
   visibility: 0,
   weather: [{ description: '', icon: '', id: 0, main: '' }],
@@ -28,10 +30,32 @@ const mockAPI = jest.fn().mockResolvedValue({
     gust: 0,
     speed: 0,
   },
-});
+};
+
+const mockAPI = jest.fn().mockResolvedValue(baseMockApiData);
+const mockAPINoTemp = jest
+  .fn()
+  .mockResolvedValue({ ...baseMockApiData, main: undefined });
+
+const setupWeather = async () => {
+  render(React.createElement(Weather, { mockAPI }));
+  const unitChangeButtons = {
+    celsius: await screen.findByLabelText(/celsius/i),
+    fahrenheit: await screen.findByLabelText(/fahrenheit/i),
+    kelvin: await screen.findByLabelText(/kelvin/i),
+  };
+  const cityName = await screen.findByLabelText(mockCityName);
+  const cityInput = await screen.findByPlaceholderText('City name');
+
+  return {
+    unitChangeButtons,
+    cityName,
+    cityInput,
+  };
+};
 
 test('renders weather page', async () => {
-  render(React.createElement(Weather, { mockAPI }));
+  setupWeather();
 
   const weatherContainer = await screen.findByLabelText('Weather');
 
@@ -39,17 +63,11 @@ test('renders weather page', async () => {
 });
 
 test('temp change to Celsius', async () => {
-  render(React.createElement(Weather, { mockAPI }));
-
-  const kelvinButton = await screen.findByLabelText(/kelvin/i);
+  const { unitChangeButtons } = await setupWeather();
+  const { celsius: celsiusButton, kelvin: kelvinButton } = unitChangeButtons;
 
   act(() => {
     kelvinButton.click();
-  });
-
-  const celsiusButton = await screen.findByLabelText(/celsius/i);
-
-  act(() => {
     celsiusButton.click();
   });
 
@@ -59,9 +77,8 @@ test('temp change to Celsius', async () => {
 });
 
 test('temp change to Fahrenheit', async () => {
-  render(React.createElement(Weather, { mockAPI }));
-
-  const fahrenheitButton = await screen.findByLabelText(/fahrenheit/i);
+  const { unitChangeButtons } = await setupWeather();
+  const { fahrenheit: fahrenheitButton } = unitChangeButtons;
 
   act(() => {
     fahrenheitButton.click();
@@ -73,9 +90,8 @@ test('temp change to Fahrenheit', async () => {
 });
 
 test('temp change to Kelvin', async () => {
-  render(React.createElement(Weather, { mockAPI }));
-
-  const kelvinButton = await screen.findByLabelText(/kelvin/i);
+  const { unitChangeButtons } = await setupWeather();
+  const { kelvin: kelvinButton } = unitChangeButtons;
 
   act(() => {
     kelvinButton.click();
@@ -87,9 +103,7 @@ test('temp change to Kelvin', async () => {
 });
 
 test('new weather info is fetched when changing city', async () => {
-  render(React.createElement(Weather, { mockAPI }));
-
-  const cityInput = await screen.findByPlaceholderText('City name');
+  const { cityInput } = await setupWeather();
 
   userEvent.type(cityInput, 'toronto');
   fireEvent.keyPress(cityInput, { key: 'Enter', charCode: 13 });
