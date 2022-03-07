@@ -10,9 +10,11 @@ export const useAsyncEffect = (
       let result: any;
       let mounted = true;
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const maybePromise = effect(() => mounted);
 
       Promise.resolve(maybePromise).then(value => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         result = value;
       });
 
@@ -20,6 +22,7 @@ export const useAsyncEffect = (
         mounted = false;
 
         if (destroy === 'function') {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           destroy(result);
         }
       };
