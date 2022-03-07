@@ -1,6 +1,6 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { render, screen } from '../../utils';
+import { render, screen, waitFor } from '../../utils';
 import { Weather } from './Weather';
 
 const mockAPI = jest.fn().mockResolvedValue({
@@ -32,7 +32,7 @@ const mockAPI = jest.fn().mockResolvedValue({
 test('renders weather page', async () => {
   render(React.createElement(Weather, { mockAPI }));
 
-  const weatherContainer = await screen.findByLabelText(/weather/i);
+  const weatherContainer = await screen.findByLabelText('Weather');
 
   expect(weatherContainer).toBeInTheDocument();
 });
