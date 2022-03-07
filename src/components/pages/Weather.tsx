@@ -12,20 +12,60 @@ import { OpenWeatherResponse, TempUnit } from '../../utils';
 const MySweetAlert = withReactContent(sweetAlert);
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+const corsProxy = process.env.REACT_APP_CORS_PROXY || '';
 const ANIMATED_TEXT_DURATION = 0.05;
 const FADE_IN_DELAY = 0.4;
 const FADE_IN_DURATION = 1.75;
 
 interface WeatherProps {
   mockAPI?: jest.Mock<Promise<OpenWeatherResponse>, any>;
+  coordinates?: { lat: number; lon: number };
 }
 
-export const Weather: React.FC<WeatherProps> = ({ mockAPI }) => {
-  const [cityName, setCityName] = useState<string>('Calgary');
+const buildWeatherAPIURI = ({
+  cityName,
+  coordinates,
+}: {
+  cityName: string;
+  coordinates?: { lat: number; lon: number };
+}) => {
+  let baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+
+  const searchParams = new URLSearchParams({
+    appid: process.env.REACT_APP_WEATHER_API_KEY || 'should not hit this',
+  });
+
+  if (!cityName && !coordinates) {
+    searchParams.append(
+      'q',
+      process.env.REACT_APP_DEFAULT_CITY_NAME || 'should not hit this',
+    );
+  } else if (!cityName && coordinates) {
+    // OpenWeatherAPI blocks fetches using geolocation due to CORS
+    // so I setup a basic CORS proxy
+    // setup guide https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors#answer-43268098
+    baseUrl = `${corsProxy}${baseUrl}`;
+    const { lat, lon } = coordinates;
+    searchParams.append('lat', `${lat}`);
+    searchParams.append('lon', `${lon}`);
+  } else {
+    searchParams.append('q', cityName);
+  }
+
+  const queryParams = searchParams.toString();
+
+  return `${baseUrl}?${queryParams}`;
+};
+
+export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
+  const [cityName, setCityName] = useState<string>('');
   const [inputVal, setInputVal] = useState<string>('');
+  const [apiCityName, setApiCityName] = useState<string>(
+    'Everywhere, Nowhere..',
+  );
   const [isLoading, setIsLoading] = useState(true);
 
-  const prevCityRef = useRef<string>('');
+  const prevCityRef = useRef<string | undefined>();
   const prevTempRef = useRef<number | undefined>();
 
   const { temperature, setTemperature, tempUnit, setTempUnit } =
@@ -35,13 +75,14 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI }) => {
     if (apiKey && cityName !== prevCityRef.current) {
       try {
         setIsLoading(true);
+
         let weatherData: undefined | OpenWeatherResponse;
 
         if (mockAPI) {
           weatherData = await mockAPI();
         } else {
           const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`,
+            buildWeatherAPIURI({ coordinates, cityName }),
           );
 
           if (!response.ok) {
@@ -51,7 +92,8 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI }) => {
           weatherData = (await response.json()) as OpenWeatherResponse;
         }
 
-        const tempFromAPI = weatherData.main?.temp;
+        const tempFromAPI = weatherData?.main?.temp;
+        const cityNameFromAPI = weatherData?.name;
 
         if (!tempFromAPI && tempFromAPI !== 0) {
           throw new Error('Temp was not found');
@@ -60,14 +102,17 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI }) => {
         prevTempRef.current = tempFromAPI;
         prevCityRef.current = cityName;
 
+        setApiCityName(cityNameFromAPI);
         setTemperature(tempFromAPI);
         setIsLoading(false);
       } catch (err) {
         setTemperature(prevTempRef.current || 0);
-        setCityName(prevCityRef.current);
+        setCityName(prevCityRef.current || '');
         setIsLoading(false);
+
+        // this could be handled so much better but for time sake I've made it highly general
         MySweetAlert.fire({
-          title: 'Error Fetching Weather Results',
+          title: 'Error Fetching Weather',
           text: 'Please check your connection',
           icon: 'error',
         });
@@ -91,7 +136,7 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI }) => {
           <AnimatedText
             capitalize
             duration={ANIMATED_TEXT_DURATION}
-            content={cityName}
+            content={cityName || apiCityName}
           />
         </CityName>
         <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
@@ -249,6 +294,11 @@ const TempSelect = styled.button<{ selected?: boolean }>`
     border-top-right-radius: 0.75rem;
     border-bottom-right-radius: 0.75rem;
   }
+
+  @media only screen and (min-width: 1200px) {
+    font-size: 1.6rem;
+    padding: 0.5rem 0;
+  }
 `;
 
 const CityInput = styled.input`
@@ -265,7 +315,7 @@ const CityInput = styled.input`
   }
 
   @media only screen and (min-width: 1200px) {
-    font-size: 1.75rem;
-    padding: 0.75rem 1.25rem;
+    font-size: 1.6rem;
+    padding: 0.5rem 1.25rem;
   }
 `;
