@@ -24,3 +24,11 @@ Finally boot up the React dev server and happy coding! 🎉
 ```bash
  > yarn start
 ```
+
+### Scripts
+
+Run Test + Coverage  
+
+```bash
+ > yarn test:coverage
+```
