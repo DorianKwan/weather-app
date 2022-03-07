@@ -1053,10 +1053,6 @@ export const gradients: UIGradient[] = [
     colors: ['#e1eec3', '#f05053'],
   },
   {
-    name: 'Zinc',
-    colors: ['#ADA996', '#F2F2F2', '#DBDBDB', '#EAEAEA'],
-  },
-  {
     name: 'Hydrogen',
     colors: ['#667db6', '#0082c8', '#0082c8', '#667db6'],
   },
@@ -1091,10 +1087,6 @@ export const gradients: UIGradient[] = [
   {
     name: 'Selenium',
     colors: ['#3C3B3F', '#605C3C'],
-  },
-  {
-    name: 'Delicate',
-    colors: ['#D3CCE3', '#E9E4F0'],
   },
   {
     name: 'Ohhappiness',
