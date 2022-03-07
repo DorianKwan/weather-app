@@ -2,8 +2,8 @@
   "name": "weather-app",
   "version": "0.1.0",
   "private": true,
-  "engines" : { 
-    "node" : "16.14.0"
+  "engines": { 
+    "node": "16.14.0"
   },
   "dependencies": {
     "@emotion/react": "^11.8.1",
