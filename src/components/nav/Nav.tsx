@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import styled from '@emotion/styled';
 import {
   BrowserRouter as Router,
@@ -21,41 +22,58 @@ const routes = [
     path: '/',
     exact: true,
     main: (props: {}) => <Home {...props} />,
+    icon: faHome,
   },
   {
     path: '/weather',
     main: (props: { coordinates?: Coordinates }) => {
       return <Weather {...props} />;
     },
+    icon: faCloudSun,
   },
 ];
 
-export const Nav = () => {
+const Sidebar = () => {
   const theme = useTypedTheme();
+  const location = useLocation();
+  const [currentRoute, setCurrentRoute] = useState(location.pathname);
+
+  useEffect(() => {
+    setCurrentRoute(location.pathname);
+  }, [location]);
+
+  return (
+    <SidebarContainer background={theme.colors.ash}>
+      <AppLogoWrapper>
+        <img src={WeatherAppLogo} alt="app-logo" />
+      </AppLogoWrapper>
+      <nav>
+        <SidebarList>
+          {routes.map(({ path, icon }) => {
+            return (
+              <NavItem
+                key={path}
+                active={currentRoute === path}
+                hoverColor={theme.colors.pink}>
+                <Link to={path}>
+                  <Icon icon={icon} />
+                </Link>
+              </NavItem>
+            );
+          })}
+        </SidebarList>
+      </nav>
+    </SidebarContainer>
+  );
+};
+
+export const Nav = () => {
   const { coordinates, isLoaded } = useGeolocation();
 
   return (
     <Router>
       <Container>
-        <SidebarContainer background={theme.colors.ash}>
-          <AppLogoWrapper>
-            <img src={WeatherAppLogo} alt="app-logo" />
-          </AppLogoWrapper>
-          <nav>
-            <SidebarList hoverColor={theme.colors.pink}>
-              <li>
-                <Link to="/">
-                  <Icon icon={faHome} />
-                </Link>
-              </li>
-              <li>
-                <Link to="/weather">
-                  <Icon icon={faCloudSun} />
-                </Link>
-              </li>
-            </SidebarList>
-          </nav>
-        </SidebarContainer>
+        <Sidebar />
         <PageContainer>
           {isLoaded ? (
             <Switch>
@@ -95,37 +113,38 @@ const SidebarContainer = styled.nav<{ background: string }>`
   }
 `;
 
-const SidebarList = styled.ul<{ hoverColor: string }>`
+const SidebarList = styled.ul`
   margin-top: 1.5rem;
+`;
 
-  li {
-    position: relative;
-    padding: 1.1rem 0;
+const NavItem = styled.li<{ active?: boolean; hoverColor: string }>`
+  position: relative;
+  padding: 1.1rem 0;
 
-    &:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 7.5%;
-      bottom: 0;
-      width: 85%;
-      border: 1px solid rgba(255, 255, 255, 0.4);
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 7.5%;
+    bottom: 0;
+    width: 85%
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+      svg {
+        color: ${({ hoverColor }) => hoverColor};
+      }
     }
 
-    a {
-      color: white;
-      text-decoration: none;
-
-      &:hover {
-        svg {
-          color: ${({ hoverColor }) => hoverColor};
-        }
-      }
-
-      svg {
-        transition: color 0.3s linear;
-        width: 1.6rem;
-        height: 1.6rem;
-      }
+    svg {
+      transition: color 0.3s linear;
+      width: 1.6rem;
+      height: 1.6rem;
+      color: ${({ active, hoverColor }) => (active ? hoverColor : 'white')};
     }
   }
 `;
