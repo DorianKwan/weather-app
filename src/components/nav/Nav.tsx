@@ -9,10 +9,12 @@ import {
 } from 'react-router-dom';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faHome, faCloudSun } from '@fortawesome/free-solid-svg-icons';
-import { useTypedTheme } from 'src/hooks';
+import { useTypedTheme, useGeolocation } from 'src/hooks';
+import { Coordinates } from 'src/utils';
 import { Home } from '../pages/Home';
 import { Weather } from '../pages/Weather';
 import WeatherAppLogo from '../../assets/images/weather-logo.png';
+import { Loader } from '../utility';
 
 const routes = [
   {
@@ -22,7 +24,7 @@ const routes = [
   },
   {
     path: '/weather',
-    main: (props: {}) => {
+    main: (props: { coordinates?: Coordinates }) => {
       return <Weather {...props} />;
     },
   },
@@ -30,6 +32,7 @@ const routes = [
 
 export const Nav = () => {
   const theme = useTypedTheme();
+  const { coordinates, isLoaded } = useGeolocation();
 
   return (
     <Router>
@@ -54,16 +57,20 @@ export const Nav = () => {
           </nav>
         </SidebarContainer>
         <PageContainer>
-          <Switch>
-            {routes.map(route => (
-              <Route key={route.path} path={route.path} exact={route.exact}>
-                {<route.main />}
+          {isLoaded ? (
+            <Switch>
+              {routes.map(route => (
+                <Route key={route.path} path={route.path} exact={route.exact}>
+                  {<route.main coordinates={coordinates} />}
+                </Route>
+              ))}
+              <Route path="*">
+                <Redirect to="/home" />
               </Route>
-            ))}
-            <Route path="*">
-              <Redirect to="/home" />
-            </Route>
-          </Switch>
+            </Switch>
+          ) : (
+            <Loader />
+          )}
         </PageContainer>
       </Container>
     </Router>
