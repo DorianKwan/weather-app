@@ -3,6 +3,7 @@ export interface Coordinates {
   readonly lat: number;
 }
 
+// this isn't entirely accurate.  I'd be more strict in a prod app
 export interface OpenWeatherResponse {
   readonly base: string;
   readonly clouds: { all: number };
