@@ -112,11 +112,11 @@ test('determine icon returns proper rain icon night & day', () => {
 
 test('determine icon returns proper cloud icon night & day', () => {
   const dayTimeCloudy = {
-    type: 'Cloudy',
+    type: 'Clouds',
     iconCode: '01d',
   };
   const nightTimeCloudy = {
-    type: 'Cloudy',
+    type: 'Clouds',
     iconCode: '01n',
   };
 
@@ -162,4 +162,31 @@ test('determine icon returns proper snow icon night & day', () => {
 
   expect(nightIcon === faSnowflake).toBeTruthy();
   expect(nightShouldSpin).toBeTruthy();
+});
+
+test('determine icon returns proper icon when type is unknown for night & day', () => {
+  const dayTimeSnow = {
+    type: 'unknown',
+    iconCode: '01d',
+  };
+  const nightTimeSnow = {
+    type: 'unknown',
+    iconCode: '01n',
+  };
+
+  const { icon: dayIcon, shouldSpin: dayShouldSpin } = determineIcon(
+    dayTimeSnow.type,
+    dayTimeSnow.iconCode,
+  );
+
+  expect(dayIcon === faSun).toBeTruthy();
+  expect(dayShouldSpin).toBeTruthy();
+
+  const { icon: nightIcon, shouldSpin: nightShouldSpin } = determineIcon(
+    nightTimeSnow.type,
+    nightTimeSnow.iconCode,
+  );
+
+  expect(nightIcon === faMoon).toBeTruthy();
+  expect(nightShouldSpin).toBeFalsy();
 });

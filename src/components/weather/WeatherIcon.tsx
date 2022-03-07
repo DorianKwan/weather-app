@@ -27,7 +27,7 @@ export const determineIcon = (type: string, iconCode: string) => {
       icon = isNightTime ? faMoon : faSun;
       shouldSpin = !isNightTime;
       break;
-    case 'Cloudy':
+    case 'Clouds':
       icon = isNightTime ? faCloudMoon : faCloud;
       break;
     case 'Rain':
@@ -38,7 +38,7 @@ export const determineIcon = (type: string, iconCode: string) => {
       shouldSpin = true;
       break;
     default:
-      icon = isNightTime ? faSun : faMoon;
+      icon = isNightTime ? faMoon : faSun;
       shouldSpin = !isNightTime;
       break;
   }
