@@ -99,3 +99,11 @@ test('new weather info is fetched when changing city', async () => {
   // only check if city name changes as temperature returned isn't consistent
   expect(updatedCityName).toBeInTheDocument();
 });
+
+test('error shown when no weather data is returned', async () => {
+  render(React.createElement(Weather, { mockAPI: mockAPINoTemp }));
+
+  const errorMessage = await screen.findByText(/was not found/i);
+
+  expect(errorMessage).toBeInTheDocument();
+});
