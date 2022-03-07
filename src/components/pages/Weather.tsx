@@ -128,8 +128,6 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
           text: errorMessage,
           icon: 'error',
         });
-        // eslint-disable-next-line no-console
-        console.error(err);
       }
     }
   }, [cityName]);
