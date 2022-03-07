@@ -1,12 +1,10 @@
 import React, { useState, useRef } from 'react';
 import styled from '@emotion/styled';
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faSun } from '@fortawesome/free-solid-svg-icons';
-import { keyframes } from '@emotion/react';
 import sweetAlert from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useAsyncEffect, useTempConversion } from 'src/hooks';
 import { AnimatedText, FadeIn, Loader, PageWrapper } from '../utility';
+import { WeatherIcon } from '../weather';
 import { OpenWeatherResponse, TempUnit } from '../../utils';
 
 const MySweetAlert = withReactContent(sweetAlert);
@@ -63,6 +61,10 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
   const [apiCityName, setApiCityName] = useState<string>(
     'Everywhere, Nowhere..',
   );
+  const [weatherIconInfo, setWeatherIconInfo] = useState<{
+    type: string;
+    iconCode: string;
+  }>({ type: 'Clear', iconCode: '01d' });
   const [isLoading, setIsLoading] = useState(true);
 
   const prevCityRef = useRef<string | undefined>();
@@ -102,6 +104,10 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
         prevTempRef.current = tempFromAPI;
         prevCityRef.current = cityName;
 
+        setWeatherIconInfo({
+          type: weatherData.weather[0].main,
+          iconCode: weatherData.weather[0].icon,
+        });
         setApiCityName(cityNameFromAPI);
         setTemperature(tempFromAPI);
         setIsLoading(false);
@@ -140,9 +146,7 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
           />
         </CityName>
         <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
-          <WeatherIconWrapper>
-            <WeatherIcon icon={faSun} />
-          </WeatherIconWrapper>
+          <WeatherIcon {...weatherIconInfo} />
         </FadeIn>
         <Temperature>
           <AnimatedText
@@ -217,44 +221,6 @@ const CityName = styled.h2`
     font-size: 3.25em;
     margin-bottom: 1rem;
   }
-`;
-
-const weatherIconAnimation = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(359deg);
-  }
-`;
-
-const WeatherIcon = styled(Icon)`
-  font-size: 5rem;
-  margin: 1rem auto;
-  animation: ${weatherIconAnimation} 10s infinite linear;
-
-  @media only screen and (min-width: 1200px) {
-    font-size: 6.25rem;
-    margin: 2rem 0;
-  }
-`;
-
-const weatherWrapperAnimation = keyframes`
-  /* Down motion */
-  0% {transform: translateY(0px);}
-  10% {transform: translateY(-2px);}
-  25% {transform: translateY(-4px);}
-  40% {transform: translateY(-2px);}
-  50% {transform: translateY(0px);}
-  /* Up motion */
-  60% {transform: translateY(2px);}
-  75% {transform: translateY(4px);}
-  90% {transform: translateY(2px);}
-  100% {transform: translateY(0px);}
-`;
-
-const WeatherIconWrapper = styled.div`
-  animation: ${weatherWrapperAnimation} 1.75s infinite linear;
 `;
 
 const Temperature = styled.p`
