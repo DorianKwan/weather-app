@@ -88,6 +88,9 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
           );
 
           if (!response.ok) {
+            if (response.status === 404) {
+              throw new Error(`City ${cityName} was not found. Typo?`);
+            }
             throw new Error('Open API Fetch Failed');
           }
 
@@ -98,7 +101,7 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
         const cityNameFromAPI = weatherData?.name;
 
         if (!tempFromAPI && tempFromAPI !== 0) {
-          throw new Error('Temp was not found');
+          throw new Error(`Temperature for ${cityNameFromAPI} was not found.`);
         }
 
         prevTempRef.current = tempFromAPI;
@@ -116,10 +119,13 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
         setCityName(prevCityRef.current || '');
         setIsLoading(false);
 
-        // this could be handled so much better but for time sake I've made it highly general
+        // error handling isn't ideal here and could be improved drastically
+        const errorMessage =
+          err instanceof Error ? err.message : 'Please check your connection';
+
         MySweetAlert.fire({
           title: 'Error Fetching Weather',
-          text: 'Please check your connection',
+          text: errorMessage,
           icon: 'error',
         });
         // eslint-disable-next-line no-console
