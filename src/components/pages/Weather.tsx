@@ -1,74 +1,85 @@
-import styled from '@emotion/styled';
 import React, { useState, useRef } from 'react';
+import styled from '@emotion/styled';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faSun } from '@fortawesome/free-solid-svg-icons';
-import { useAsyncEffect } from 'src/hooks';
 import { keyframes } from '@emotion/react';
-import { AnimatedText, FadeIn, PageWrapper } from '../utility';
+import sweetAlert from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { useAsyncEffect, useTempConversion } from 'src/hooks';
+import { AnimatedText, FadeIn, Loader, PageWrapper } from '../utility';
+import { OpenWeatherResponse, TempUnit } from '../../utils';
+
+const MySweetAlert = withReactContent(sweetAlert);
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
 const ANIMATED_TEXT_DURATION = 0.05;
-const FADE_IN_DELAY = 0.25;
+const FADE_IN_DELAY = 0.4;
 const FADE_IN_DURATION = 1.75;
 
-interface WeatherData {
-  base: string;
-  clouds: { all: number };
-  cod: number;
-  coord: { lon: number; lat: number };
-  dt: number;
-  id: number;
-  main: {
-    feels_like: number;
-    humidity: number;
-    pressure: number;
-    temp: number;
-    temp_max: number;
-    temp_min: number;
-  };
-  name: string;
-  timezone: number;
-  visibility: number;
-  weather: { description: string; icon: string; id: number; main: string }[];
-  wind: {
-    deg: number;
-    gust: number;
-    speed: number;
-  };
+interface WeatherProps {
+  mockAPI?: jest.Mock<Promise<OpenWeatherResponse>, any>;
 }
 
-export const Weather = () => {
+export const Weather: React.FC<WeatherProps> = ({ mockAPI }) => {
   const [cityName, setCityName] = useState<string>('Calgary');
   const [inputVal, setInputVal] = useState<string>('');
-  const [weather, setWeather] = useState<WeatherData | undefined>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const prevCityRef = useRef<string>('');
-  const prevWeatherRef = useRef<WeatherData | undefined>();
+  const prevTempRef = useRef<number | undefined>();
+
+  const { temperature, setTemperature, tempUnit, setTempUnit } =
+    useTempConversion(273.15, TempUnit.Celsius);
 
   useAsyncEffect(async () => {
     if (apiKey && cityName !== prevCityRef.current) {
       try {
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`,
-        );
+        setIsLoading(true);
+        let weatherData: undefined | OpenWeatherResponse;
 
-        if (!response.ok) {
-          // will handle this better in next PR
-          throw new Error('Open API Fetch Failed');
+        if (mockAPI) {
+          weatherData = await mockAPI();
+        } else {
+          const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`,
+          );
+
+          if (!response.ok) {
+            throw new Error('Open API Fetch Failed');
+          }
+
+          weatherData = (await response.json()) as OpenWeatherResponse;
         }
 
-        const weatherData = (await response.json()) as WeatherData;
-        setWeather(weatherData);
+        const tempFromAPI = weatherData.main?.temp;
 
-        prevWeatherRef.current = weatherData;
+        if (!tempFromAPI && tempFromAPI !== 0) {
+          throw new Error('Temp was not found');
+        }
+
+        prevTempRef.current = tempFromAPI;
         prevCityRef.current = cityName;
+
+        setTemperature(tempFromAPI);
+        setIsLoading(false);
       } catch (err) {
-        setWeather(prevWeatherRef.current);
+        setTemperature(prevTempRef.current || 0);
         setCityName(prevCityRef.current);
+        setIsLoading(false);
+        MySweetAlert.fire({
+          title: 'Error Fetching Weather Results',
+          text: 'Please check your connection',
+          icon: 'error',
+        });
+        // eslint-disable-next-line no-console
         console.error(err);
       }
     }
   }, [cityName]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <WeatherPageWrapper>
@@ -77,7 +88,11 @@ export const Weather = () => {
           <AnimatedText duration={ANIMATED_TEXT_DURATION} content="Weather" />
         </WeatherHeading>
         <CityName>
-          <AnimatedText duration={ANIMATED_TEXT_DURATION} content={cityName} />
+          <AnimatedText
+            capitalize
+            duration={ANIMATED_TEXT_DURATION}
+            content={cityName}
+          />
         </CityName>
         <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
           <WeatherIconWrapper>
@@ -87,14 +102,33 @@ export const Weather = () => {
         <Temperature>
           <AnimatedText
             duration={ANIMATED_TEXT_DURATION}
-            content={
-              weather?.main?.temp?.toPrecision(4)
-                ? `${weather?.main?.temp?.toPrecision(4)}K`
-                : ''
-            }
+            content={temperature}
           />
         </Temperature>
         <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
+          <TempSelectWrapper>
+            <TempSelect
+              type="button"
+              aria-label="select celsius temperature unit"
+              selected={tempUnit === TempUnit.Celsius}
+              onClick={() => setTempUnit(TempUnit.Celsius)}>
+              °C
+            </TempSelect>
+            <TempSelect
+              type="button"
+              aria-label="select fahrenheit temperature unit"
+              selected={tempUnit === TempUnit.Fahrenheit}
+              onClick={() => setTempUnit(TempUnit.Fahrenheit)}>
+              °F
+            </TempSelect>
+            <TempSelect
+              type="button"
+              aria-label="select kelvin temperature unit"
+              selected={tempUnit === TempUnit.Kelvin}
+              onClick={() => setTempUnit(TempUnit.Kelvin)}>
+              K
+            </TempSelect>
+          </TempSelectWrapper>
           <CityInput
             placeholder="City name"
             onChange={event => setInputVal(event.currentTarget.value)}
@@ -189,6 +223,34 @@ const Temperature = styled.p`
   }
 `;
 
+const TempSelectWrapper = styled.div`
+  display: flex;
+  padding-bottom: 1rem;
+`;
+
+const TempSelect = styled.button<{ selected?: boolean }>`
+  border: none;
+  background: ${({ selected }) => (selected ? '#DD5E89' : '#457fca')};
+  color: white;
+  font-weight: bold;
+  flex: 1;
+  padding: 0.45rem 0;
+
+  &:first-of-type {
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
+  }
+
+  &:not(:last-of-type) {
+    border-right: solid 1px white;
+  }
+
+  &:last-of-type {
+    border-top-right-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+  }
+`;
+
 const CityInput = styled.input`
   padding: 0.5rem 0.75rem;
   border-radius: 0.75rem;
@@ -197,7 +259,9 @@ const CityInput = styled.input`
   margin-bottom: 1rem;
 
   &:focus-visible {
-    outline-color: #8f94fb;
+    outline: none;
+    border: 1px solid #8f94fb;
+    box-shadow: 0 0 1px 1px #8f94fb;
   }
 
   @media only screen and (min-width: 1200px) {
