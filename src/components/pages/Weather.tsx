@@ -159,40 +159,42 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
           />
         </Temperature>
         <FadeIn delay={FADE_IN_DELAY} duration={FADE_IN_DURATION}>
-          <TempSelectWrapper>
-            <TempSelect
-              type="button"
-              aria-label="select celsius temperature unit"
-              selected={tempUnit === TempUnit.Celsius}
-              onClick={() => setTempUnit(TempUnit.Celsius)}>
-              °C
-            </TempSelect>
-            <TempSelect
-              type="button"
-              aria-label="select fahrenheit temperature unit"
-              selected={tempUnit === TempUnit.Fahrenheit}
-              onClick={() => setTempUnit(TempUnit.Fahrenheit)}>
-              °F
-            </TempSelect>
-            <TempSelect
-              type="button"
-              aria-label="select kelvin temperature unit"
-              selected={tempUnit === TempUnit.Kelvin}
-              onClick={() => setTempUnit(TempUnit.Kelvin)}>
-              K
-            </TempSelect>
-          </TempSelectWrapper>
-          <CityInput
-            placeholder="City name"
-            onChange={event => setInputVal(event.currentTarget.value)}
-            onKeyPress={event => {
-              if (event.key === 'Enter') {
-                setCityName(inputVal);
-                setInputVal('');
-              }
-            }}
-            value={inputVal}
-          />
+          <TempuratureInputWrapper>
+            <TempSelectWrapper>
+              <TempSelect
+                type="button"
+                aria-label="select celsius temperature unit"
+                selected={tempUnit === TempUnit.Celsius}
+                onClick={() => setTempUnit(TempUnit.Celsius)}>
+                °C
+              </TempSelect>
+              <TempSelect
+                type="button"
+                aria-label="select fahrenheit temperature unit"
+                selected={tempUnit === TempUnit.Fahrenheit}
+                onClick={() => setTempUnit(TempUnit.Fahrenheit)}>
+                °F
+              </TempSelect>
+              <TempSelect
+                type="button"
+                aria-label="select kelvin temperature unit"
+                selected={tempUnit === TempUnit.Kelvin}
+                onClick={() => setTempUnit(TempUnit.Kelvin)}>
+                K
+              </TempSelect>
+            </TempSelectWrapper>
+            <CityInput
+              placeholder="City name"
+              onChange={event => setInputVal(event.currentTarget.value)}
+              onKeyPress={event => {
+                if (event.key === 'Enter') {
+                  setCityName(inputVal);
+                  setInputVal('');
+                }
+              }}
+              value={inputVal}
+            />
+          </TempuratureInputWrapper>
         </FadeIn>
       </WeatherContainer>
     </WeatherPageWrapper>
@@ -238,9 +240,17 @@ const Temperature = styled.p`
   }
 `;
 
+const TempuratureInputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 const TempSelectWrapper = styled.div`
   display: flex;
   padding-bottom: 1rem;
+  width: 100%;
+  max-width: 21.3125rem;
 `;
 
 const TempSelect = styled.button<{ selected?: boolean }>`
@@ -272,6 +282,8 @@ const TempSelect = styled.button<{ selected?: boolean }>`
 `;
 
 const CityInput = styled.input`
+  width: 100%;
+  max-width: 21.3125rem;
   padding: 0.5rem 0.75rem;
   border-radius: 0.75rem;
   border-style: none;
