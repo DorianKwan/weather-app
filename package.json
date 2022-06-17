@@ -2,7 +2,7 @@
   "name": "weather-app",
   "version": "0.1.0",
   "private": true,
-  "engines": { 
+  "engines": {
     "node": "16.14.0"
   },
   "dependencies": {
