@@ -11,6 +11,7 @@ const MySweetAlert = withReactContent(sweetAlert);
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
 const corsProxy = process.env.REACT_APP_CORS_PROXY || '';
+const sunnyIconCode = '01d';
 const ANIMATED_TEXT_DURATION = 0.05;
 const FADE_IN_DELAY = 0.4;
 const FADE_IN_DURATION = 1.75;
@@ -33,12 +34,15 @@ const buildWeatherAPIURI = ({
     appid: process.env.REACT_APP_WEATHER_API_KEY || 'should not hit this',
   });
 
-  if (!cityName && !coordinates) {
+  const isMissingCityNameAndCoord = !cityName && !coordinates;
+  const isFetchingWithGeolocation = !cityName && coordinates;
+
+  if (isMissingCityNameAndCoord) {
     searchParams.append(
       'q',
       process.env.REACT_APP_DEFAULT_CITY_NAME || 'should not hit this',
     );
-  } else if (!cityName && coordinates) {
+  } else if (isFetchingWithGeolocation) {
     // OpenWeatherAPI blocks fetches using geolocation due to CORS
     // so I setup a basic CORS proxy
     // setup guide https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors#answer-43268098
@@ -64,7 +68,7 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
   const [weatherIconInfo, setWeatherIconInfo] = useState<{
     type: string;
     iconCode: string;
-  }>({ type: 'Clear', iconCode: '01d' });
+  }>({ type: 'Clear', iconCode: sunnyIconCode });
   const [isLoading, setIsLoading] = useState(true);
 
   const prevCityRef = useRef<string | undefined>();
