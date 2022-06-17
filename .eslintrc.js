@@ -46,7 +46,7 @@ module.exports = {
     'react/jsx-wrap-multilines': 0,
     'react/jsx-indent': 0,
     '@typescript-eslint/no-for-in-array': ['error'],
-    'no-unused-vars': 0,
+    'no-unused-vars': ['warn', { args: 'none' }],
     'no-useless-constructor': 0,
     'no-empty-function': 0,
     'react/prop-types': 0,
