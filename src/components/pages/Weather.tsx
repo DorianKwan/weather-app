@@ -3,21 +3,23 @@ import styled from '@emotion/styled';
 import sweetAlert from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useAsyncEffect, useTempConversion } from 'src/hooks';
+import axios from 'axios';
 import { AnimatedText, FadeIn, Loader, PageWrapper } from '../utility';
 import { WeatherIcon } from '../weather';
 import { OpenWeatherResponse, TempUnit } from '../../utils';
 
 const MySweetAlert = withReactContent(sweetAlert);
 
-const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+// add 'api-key' for testing purposes (in a production app I would load config in a way where the func is mocked)
+const apiKey = process.env.REACT_APP_WEATHER_API_KEY || 'api-key';
 const corsProxy = process.env.REACT_APP_CORS_PROXY || '';
+const defaultCityName = process.env.REACT_APP_DEFAULT_CITY_NAME || '';
 const sunnyIconCode = '01d';
 const ANIMATED_TEXT_DURATION = 0.05;
 const FADE_IN_DELAY = 0.4;
 const FADE_IN_DURATION = 1.75;
 
 interface WeatherProps {
-  mockAPI?: jest.Mock<Promise<OpenWeatherResponse>, any>;
   coordinates?: { lat: number; lon: number };
 }
 
@@ -31,17 +33,14 @@ const buildWeatherAPIURI = ({
   let baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
   const searchParams = new URLSearchParams({
-    appid: process.env.REACT_APP_WEATHER_API_KEY || 'should not hit this',
+    appid: apiKey,
   });
 
   const isMissingCityNameAndCoord = !cityName && !coordinates;
   const isFetchingWithGeolocation = !cityName && coordinates;
 
   if (isMissingCityNameAndCoord) {
-    searchParams.append(
-      'q',
-      process.env.REACT_APP_DEFAULT_CITY_NAME || 'should not hit this',
-    );
+    searchParams.append('q', defaultCityName);
   } else if (isFetchingWithGeolocation) {
     // OpenWeatherAPI blocks fetches using geolocation due to CORS
     // so I setup a basic CORS proxy
@@ -59,7 +58,7 @@ const buildWeatherAPIURI = ({
   return `${baseUrl}?${queryParams}`;
 };
 
-export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
+export const Weather: React.FC<WeatherProps> = ({ coordinates }) => {
   const [cityName, setCityName] = useState<string>('');
   const [inputVal, setInputVal] = useState<string>('');
   const [apiCityName, setApiCityName] = useState<string>(
@@ -82,24 +81,19 @@ export const Weather: React.FC<WeatherProps> = ({ mockAPI, coordinates }) => {
       try {
         setIsLoading(true);
 
-        let weatherData: undefined | OpenWeatherResponse;
+        const response = await axios.get<OpenWeatherResponse>(
+          buildWeatherAPIURI({ coordinates, cityName }),
+        );
 
-        if (mockAPI) {
-          weatherData = await mockAPI();
-        } else {
-          const response = await fetch(
-            buildWeatherAPIURI({ coordinates, cityName }),
-          );
-
-          if (!response.ok) {
-            if (response.status === 404) {
-              throw new Error(`City ${cityName} was not found. Typo?`);
-            }
-            throw new Error('Open API Fetch Failed');
+        if (response.status !== 200) {
+          if (response.status === 404) {
+            throw new Error(`City ${cityName} was not found. Typo?`);
           }
 
-          weatherData = (await response.json()) as OpenWeatherResponse;
+          throw new Error('Open API Fetch Failed');
         }
+
+        const weatherData = response.data;
 
         const tempFromAPI = weatherData?.main?.temp;
         const cityNameFromAPI = weatherData?.name;
